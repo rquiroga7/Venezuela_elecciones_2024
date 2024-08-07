@@ -200,14 +200,13 @@ data2024$EDO <- gsub("EDO. ", "", data2024$EDO)
 data2024$EDO <- gsub("EDO.", "", data2024$EDO)
 data2024 <- data2024 %>% mutate(EDO=ifelse(EDO=="LA GUAIRA","La Guaira (Vargas)",EDO))
 data2024$EDO<-as.factor(data2024$EDO)
-
+#Process 2013 data
 data2013 <- read.csv("resultados_elecc_2013-04-14-v4.csv", header = TRUE)
 data2013 <- data2013 %>% filter(Estado != "Embajadas" & Estado != "Zonas Inhóspitas")
 data2013 <- data2013 %>% mutate(Estado=ifelse(Estado=="Vargas","La Guaira (Vargas)",Estado))
 data2013$Estado <- as.factor(data2013$Estado)
 levels(data2024$EDO)
 levels(data2013$Estado)
-
 #Change level names of data2024$EDO to those of data2013$Estado
 levels(data2024$EDO) <- levels(data2013$Estado)
 
@@ -260,8 +259,8 @@ data2024b2 <- process_data(data2024b, "ESTADO", "CENTRO")
 data_merged <- merge(data2013b3, data2024b2, by = "CENTRO", suffixes = c("_2013", "_2024"))
 #Now do a scatterplot, where transparent dots are colored by ESTADO, size is determined by votos_totales, and x is Maduro_pctdiff_2013 and y is Maduro_pctdiff_2024.
 create_scatterplot(data_merged, "ESTADO", c("CENTRO"))
-
-
+create_densityplot(data_merged, "ESTADO", c("CENTRO"))
+#ACATOY
 
 ggplot(data_merged, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024, size = votos_totales_2024)) +
   stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = 0.3) +
