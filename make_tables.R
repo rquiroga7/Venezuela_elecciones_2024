@@ -3,6 +3,7 @@ library(kableExtra)
 library(ggplot2)
 library(dplyr)
 library(viridis)
+library(ggrepel)
 
 #import functions from functions.R
 source("functions.R")
@@ -256,117 +257,95 @@ levels(data2024$EDO) <- levels(data2013$Estado)
 data2013b2 <- process_data(data2013b, "ESTADO", "CENTRO")
 data2024b2 <- process_data(data2024b, "ESTADO", "CENTRO")
 #Now merge data2013b and data2024b by CENTRO, ESTADO, municipio, and parroquia. 
-data_merged <- merge(data2013b3, data2024b2, by = "CENTRO", suffixes = c("_2013", "_2024"))
+data_merged <- merge(data2013b2, data2024b2, by = "CENTRO", suffixes = c("_2013", "_2024"))
 #Now do a scatterplot, where transparent dots are colored by ESTADO, size is determined by votos_totales, and x is Maduro_pctdiff_2013 and y is Maduro_pctdiff_2024.
 create_scatterplot(data_merged, "ESTADO", c("CENTRO"))
-create_densityplot(data_merged, "ESTADO", c("CENTRO"))
-#ACATOY
-
-ggplot(data_merged, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024, size = votos_totales_2024)) +
-  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = 0.3) +
-  #geom_point(alpha = 0.15, show.legend = FALSE) +
-  geom_abline(slope = 1, alpha = 0.25, intercept = 0, color = "black", linetype = "dashed") +
-  labs(x = "Maduro_pctdiff_2013 (Maduro_pct_centro_2013 - avg_Maduro_pct_estado_2013)",
-       y = "Maduro_pctdiff_2024 (Maduro_pct_centro_2024 - avg_Maduro_pct_estado_2024)",
-       title = "Diferencia porcentual para Maduro por centro con respecto al promedio por Estado",
-       size = "Votos totales",
-       fill = "Density") +
-  theme_light(base_size = 9) +
-  facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 6) +  # Facet by Estado with fixed scales
-  theme(legend.position = "right",
-        axis.text.x = element_text(angle = 90, vjust = 0.5),
-        strip.text = element_text(color = "black", face = "bold"),
-        strip.background = element_rect(fill = "lightgray"),
-        legend.box = "vertical",
-        legend.box.just = "center") +
-  scale_size_continuous(range = c(0.2, 2.5), guide = "none") +
-  xlim(-100, 100) +  # Set hard limits for x-axis
-  ylim(-100, 100) +  # Set hard limits for y-axis
-  #use inferno
-  scale_fill_viridis_c(option = "inferno")
-ggsave("Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_density.png", width = 18, height = 18, units = "cm", dpi = 500)
+create_densityplot(data_merged, "ESTADO", c("CENTRO"),alphad=0.8)
 
 #Now do muni versus estado
 data2013b3 <- process_data(data2013b, "municipio", c("CENTRO", "ESTADO"))
 data2024b3 <- process_data(data2024b, "municipio", c("CENTRO", "ESTADO"))
 #Now merge data2013b and data2024b by CENTRO, ESTADO, municipio, and parroquia. 
-data_merged <- merge(data2013b3b, data2024b3, by = "CENTRO", suffixes = c("_2013", "_2024"))
-
-
-# Now do a scatterplot, where transparent dots are colored by ESTADO, size is determined by votos_totales, and x is Maduro_pctdiff_2013 and y is Maduro_pctdiff_2024.
-ggplot(data_merged, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024, color = ESTADO_2013, size = votos_totales_2024)) +
-  geom_point(alpha = 0.15,show.legend = FALSE) +
-  geom_abline(slope = 1, alpha=0.25, intercept = 0, color = "black", linetype = "dashed") +
-  labs(x = "Maduro_pctdiff_2013 (Maduro_pct_centro_2013 - avg_Maduro_pct_muni_2013)",
-       y = "Maduro_pctdiff_2024 (Maduro_pct_centro_2024 - avg_Maduro_pct_muni_2024)",
-       title = "Diferencia porcentual para Maduro por centro con respecto al promedio por Municipio",
-       size = "Votos totales",
-       color = "ESTADO") +
-  theme_light(base_size = 9) +
-      facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 6) +  # Facet by Estado with fixed scales
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 90, vjust = 0.5),
-        strip.text = element_text(color = "black", face = "bold"),
-        strip.background = element_rect(fill = "lightgray"),
-        legend.box = "vertical",
-        legend.box.just = "center") +
-  scale_size_continuous(range = c(0.2, 2.5), guide = "none") +
-  xlim(-100, 100) +  # Set hard limits for x-axis
-  ylim(-100, 100)   # Set hard limits for y-axis
-ggsave("Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_centro_vs_muni.png", width = 18, height = 18, units = "cm", dpi = 500)
+data_merged <- merge(data2013b3, data2024b3, by = "CENTRO", suffixes = c("_2013", "_2024"))
 create_scatterplot(data_merged, "municipio", c("CENTRO", "ESTADO"))
-library(ggplot2)
-
-ggplot(data_merged, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024, size = votos_totales_2024)) +
-  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = 0.3) +
-  #geom_point(alpha = 0.15, show.legend = FALSE) +
-  geom_abline(slope = 1, alpha = 0.25, intercept = 0, color = "black", linetype = "dashed") +
-  labs(x = "Maduro_pctdiff_2013 (Maduro_pct_centro_2013 - avg_Maduro_pct_muni_2013)",
-       y = "Maduro_pctdiff_2024 (Maduro_pct_centro_2024 - avg_Maduro_pct_muni_2024)",
-       title = "Diferencia porcentual para Maduro por centro con respecto al promedio por Municipio",
-       size = "Votos totales",
-       fill = "Density") +
-  theme_light(base_size = 9) +
-  facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 6) +  # Facet by Estado with fixed scales
-  theme(legend.position = "right",
-        axis.text.x = element_text(angle = 90, vjust = 0.5),
-        strip.text = element_text(color = "black", face = "bold"),
-        strip.background = element_rect(fill = "lightgray"),
-        legend.box = "vertical",
-        legend.box.just = "center") +
-  scale_size_continuous(range = c(0.2, 2.5), guide = "none") +
-  xlim(-100, 100) +  # Set hard limits for x-axis
-  ylim(-100, 100) +  # Set hard limits for y-axis
-  scale_fill_viridis_c(option = "inferno")
-ggsave("Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_centro_vs_muni_density.png", width = 18, height = 18, units = "cm", dpi = 500)
-
+create_densityplot(data_merged, "municipio", c("CENTRO", "ESTADO"),alphad=0.8)
 
 #Now do muni versus estado
-data2013c <- process_data(data2013b, "ESTADO", c("COD_MUN", "municipio"))
-data2024c <- process_data(data2024b, "ESTADO", c("COD_MUN", "municipio"))
+data2013c <- process_data(data2013b, "ESTADO", c("COD_MUN", "municipio")) %>% mutate(ANIO = 2013)
+data2024c <- process_data(data2024b, "ESTADO", c("COD_MUN", "municipio")) %>% mutate(ANIO = 2024)
 #Now merge data2013b and data2024b by CENTRO, ESTADO, municipio, and parroquia. 
-data_mergedc <- merge(data2013cb, data2024c, by = "COD_MUN", suffixes = c("_2013", "_2024"))
+data_mergedc <- merge(data2013c, data2024c, by = "COD_MUN", suffixes = c("_2013", "_2024"))
+create_scatterplot(data_mergedc, "ESTADO", c("municipio"),alphad=0.8)
+
+data_mergedcr <- rbind(data2013c, data2024c)
+#Make a new column, grouping by ANIO and then calculating an inverse ranking of Maduro_pct. The lowest value is 1 and the largest is the amount of unique municipio values
 
 
-# Now do a scatterplot, where transparent dots are colored by ESTADO, size is determined by votos_totales, and x is Maduro_pctdiff_2013 and y is Maduro_pctdiff_2024.
-ggplot(data_mergedc, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024, color = ESTADO_2013, size = votos_totales_2024)) +
-  geom_point(alpha = 0.15,show.legend = FALSE) +
-  geom_abline(slope = 1, alpha=0.80, intercept = 0, color = "black", linetype = "dashed") +
-  labs(x = "Maduro_pctdiff_2013 (Maduro_pct_muni_2013 - avg_Maduro_pct_estado_2013)",
-       y = "Maduro_pctdiff_2024 (Maduro_pct_muni_2024 - avg_Maduro_pct_estado_2024)",
-       title = "Diferencia porcentual para Maduro por municipio con respecto al promedio por Estado",
-       size = "Votos totales",
-       color = "ESTADO") +
-  theme_light(base_size = 9) +
-      facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 6) +  # Facet by Estado with fixed scales
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 90, vjust = 0.5),
-        strip.text = element_text(color = "black", face = "bold"),
-        strip.background = element_rect(fill = "lightgray"),
-        legend.box = "vertical",
-        legend.box.just = "center") +
-  scale_size_continuous(range = c(1.0, 5.0), guide = "none") +
-  xlim(-100, 100) +  # Set hard limits for x-axis
-  ylim(-100, 100)   # Set hard limits for y-axis
-ggsave("Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_muni_vs_estado.png", width = 18, height = 18, units = "cm", dpi = 500)
+#Now do a side by side plot, facet at the AÑO level, plotting Part_pct against Maduro_pct with a for loop that loops for each ESTADO, coloring by municipio, sizing by votos_totales, and label each dot with the municipio value.
+for (estado in unique(data_mergedcr$ESTADO)) {
+  # Filter data for the current ESTADO
+  estado="Miranda"
+  estado_data <- data_mergedcr %>% filter(ESTADO == estado)
+  estado_data <- estado_data %>% group_by(ANIO) %>% mutate(Maduro_invrank = rank(Maduro_pct)) %>% ungroup()
+  
+  # Create the scatterplot for Maduro_pct
+p1 <- ggplot(estado_data, aes(y = Part_pct, x = Maduro_invrank, color = municipio, size = votos_totales)) +
+    geom_point(alpha = 0.80) +  # Transparent dots
+    geom_text(aes(label = municipio, y = ifelse(ANIO == 2024, 0.40, ifelse(ANIO == 2013, 0.70, NA))), size = 2, angle = 90) +  # Add text labels at specific y-values
+    labs(y = "Participación (votos_totales / registrados)",
+         x = "Ranking de municipios por Maduro_pct (menor a mayor)",
+         title = paste("Ranking municipios Maduro_pct vs Participación en", estado),
+         size = "Votantes registrados por mesa",
+         color = "Municipios") +
+    theme_light(base_size = 14) +  # Use a minimal theme
+    theme(legend.position = "bottom",  # Move legend to the bottom
+          axis.text.x = element_text(angle = 90, vjust = 0.5),  # Rotate x-axis text and change font size
+          strip.text = element_text(color = "black", face = "bold"),  # Change facet header text color to black and bold
+          strip.background = element_rect(fill = "lightgray"),
+          legend.box = "vertical",  # Stack legends vertically
+          legend.box.just = "center") +  # Align legends to the left
+
+    scale_size_continuous(range = c(1.0, 6.0)) +  # Adjust the range of dot sizes
+    guides(color = "none") +  # Remove color legend
+    facet_wrap(. ~ ANIO, ncol = 2, scales = "free")
+p1
+  # Save the plot
+  ggsave(paste0("./plots_estados/","Maduro_vs_Participacion_", estado, ".png"), plot = p1, width = 18, height = 12, units = "cm", dpi = 500)
+
+}
+
+#Using datamergedc, create a for loop that loops for each ESTADO, coloring by municipio, sizing by votos_totales, and label each dot with the municipio value.
+for (estado in unique(data_mergedc$ESTADO_2013)) {
+  # Filter data for the current ESTADO
+  #estado="Miranda"
+  estado_data <- data_mergedc %>% filter(ESTADO_2013 == estado)
+  estado_data <- estado_data %>% mutate(Maduro_invrank_2024 = rank(Maduro_pct_2024),Maduro_invrank_2013 = rank(Maduro_pct_2013)) %>% ungroup()
+  
+  # Create the scatterplot for Maduro_pct
+p2 <- ggplot(estado_data, aes(y = Maduro_invrank_2024, x = Maduro_invrank_2013, color = municipio_2024, size = votos_totales_2024)) +
+    geom_point(alpha = 0.80) +  # Transparent dots
+    geom_text_repel(aes(label = municipio_2024), size = 3) +  # Add text labels with repel
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +  # Add abline with slope 1
+    scale_x_continuous(limits = c(1, NA)) +  # Set x-axis to start at 1
+    scale_y_continuous(limits = c(1, NA)) +  # Set y-axis to start at 1
+    labs(y = "2024: Ranking de municipios Maduro_pct (inv)",
+         x = "2013: Ranking de municipios Maduro_pct (inv)",
+         title = paste("Ranking municipios Maduro_pct en", estado),
+         size = "Votos válidos totales por municipio",
+         color = "Municipios") +
+    theme_light(base_size = 12) +  # Use a minimal theme
+    theme(legend.position = "bottom",  # Move legend to the bottom
+          axis.text.x = element_text(angle = 90, vjust = 0.5),  # Rotate x-axis text and change font size
+          strip.text = element_text(color = "black", face = "bold"),  # Change facet header text color to black and bold
+          strip.background = element_rect(fill = "lightgray"),
+          legend.box = "vertical",  # Stack legends vertically
+          legend.box.just = "center") +  # Align legends to the left
+    scale_size_continuous(range = c(1.0, 6.0)) +  # Adjust the range of dot sizes
+    guides(color = "none")   # Remove color legend
+
+p2
+  # Save the plot
+  ggsave(paste0("./plots_estados/","Maduro_rank_2024_vs_2013_", estado, ".png"), plot = p2, width = 18, height = 14, units = "cm", dpi = 500)
+
+}
 

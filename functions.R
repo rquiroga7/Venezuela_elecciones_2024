@@ -19,7 +19,7 @@ create_scatterplot <- function(data_merged,group_by, merge_by, alphad=0.15) {
   x_label <- paste0("Maduro_pctdiff_2013 (Maduro_pct_",merge_bys,"_2013 - avg_Maduro_pct_", group_by, "_2013)")
   y_label <- paste0("Maduro_pctdiff_2024 (Maduro_pct_",merge_bys,"_2024 - avg_Maduro_pct_", group_by, "_2024)")
   title <- paste0("Diferencia porcentual para Maduro por ",merge_bys," con respecto al promedio por ", group_by)
-  output_file <- paste0("test_Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_",merge_bys,"_vs_", group_by, ".png")
+  output_file <- paste0("Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_",merge_bys,"_vs_", group_by, ".png")
   
   # Create scatterplot
   plot <- ggplot(data_merged, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024, color = ESTADO_2013, size = votos_totales_2024)) +
@@ -43,7 +43,7 @@ create_scatterplot <- function(data_merged,group_by, merge_by, alphad=0.15) {
     ylim(-100, 100)
   
   # Save plot
-  ggsave(output_file, plot, width = 18, height = 18, units = "cm", dpi = 500)
+  ggsave(output_file, plot, width = 18, height = 15, units = "cm", dpi = 500)
 }
 
 create_densityplot <- function(data_merged,group_by, merge_by,alphad=0.3) {
@@ -65,12 +65,12 @@ create_densityplot <- function(data_merged,group_by, merge_by,alphad=0.3) {
   x_label <- paste0("Maduro_pctdiff_2013 (Maduro_pct_",merge_bys,"_2013 - avg_Maduro_pct_", group_by, "_2013)")
   y_label <- paste0("Maduro_pctdiff_2024 (Maduro_pct_",merge_bys,"_2024 - avg_Maduro_pct_", group_by, "_2024)")
   title <- paste0("Diferencia porcentual para Maduro por ",merge_bys," con respecto al promedio por ", group_by)
-  output_file <- paste0("test_density_Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_",merge_bys,"_vs_", group_by, ".png")
+  output_file <- paste0("Maduro_pctdiff_2013_vs_Maduro_pctdiff_2024_density_",merge_bys,"_vs_", group_by, ".png")
   
   # Create densityplot
-  plot <- ggplot(data_merged, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024, color = ESTADO_2013, size = votos_totales_2024)) +
+  plot <- ggplot(data_merged, aes(x = Maduro_pctdiff_2013, y = Maduro_pctdiff_2024)) +
     stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = alphad) +
-    geom_abline(slope = 1, alpha = 0.25, intercept = 0, color = "black", linetype = "dashed") +
+    geom_abline(slope = 1, alpha = 0.75, intercept = 0, color = "red", linetype = "dotted") +
     labs(x = x_label,
          y = y_label,
          title = title,
@@ -90,18 +90,18 @@ create_densityplot <- function(data_merged,group_by, merge_by,alphad=0.3) {
     scale_fill_viridis_c(option = "inferno")
   
   # Save plot
-  ggsave(output_file, plot, width = 18, height = 18, units = "cm", dpi = 500)
+  ggsave(output_file, plot, width = 18, height = 15, units = "cm", dpi = 500)
 }
 
 process_data <- function(data, group, eval) {
   data %>%
     group_by(across(all_of(c(eval,group)))) %>%
-    summarise(Maduro = sum(Maduro), votos_totales = sum(votos_totales)) %>%
-    mutate(Maduro_pct = Maduro / votos_totales) %>%
+    summarise(Maduro = sum(Maduro), votos_totales = sum(votos_totales), registrados=sum(registrados)) %>%
+    mutate(Maduro_pct = Maduro / votos_totales, Part_pct = votos_totales / registrados) %>%
     group_by(across(all_of(group))) %>%
-    mutate(avg_Maduro_pct = mean(Maduro_pct)) %>%
+    mutate(avg_Maduro_pct = mean(Maduro_pct), avg_Part_pct = mean(Part_pct)) %>%
     ungroup() %>%
     group_by(across(all_of(c(eval,group)))) %>%
-    mutate(Maduro_pctdiff = (Maduro_pct - avg_Maduro_pct) / avg_Maduro_pct * 100) %>%
+    mutate(Maduro_pctdiff = (Maduro_pct - avg_Maduro_pct) / avg_Maduro_pct * 100, Part_pctdiff = (Part_pct - avg_Part_pct) / avg_Part_pct * 100) %>%
     ungroup()
 }
