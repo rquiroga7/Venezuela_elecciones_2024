@@ -65,3 +65,7 @@ Las contribuciones y correcciones serán bienvenidas.
 
 Se agradece a Walter Mebane por proveer los datos de las elecciones Venezolanas por mesa para la elección presidencial del año 2013.
 
+## Autor
+
+Dr. Rodrigo Quiroga, investigador asistente INFIQC-CONICET, Profesor adjunto en el departamento de Química Teórica y Computacional, Universidad Nacional de Córdoba, ARGENTINA
+@rquiroga777 en Twitter
