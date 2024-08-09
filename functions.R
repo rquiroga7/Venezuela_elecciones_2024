@@ -31,7 +31,7 @@ create_scatterplot <- function(data_merged,group_by, merge_by, alphad=0.15) {
          size = "Votos totales",
          color = "ESTADO") +
     theme_light(base_size = 9) +
-    facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 6) +
+    facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 8) +
     theme(legend.position = "none",
           axis.text.x = element_text(angle = 90, vjust = 0.5),
           strip.text = element_text(color = "black", face = "bold"),
@@ -43,7 +43,7 @@ create_scatterplot <- function(data_merged,group_by, merge_by, alphad=0.15) {
     ylim(-100, 100)
   
   # Save plot
-  ggsave(output_file, plot, width = 18, height = 15, units = "cm", dpi = 500)
+  ggsave(output_file, plot, width = 18, height = 12, units = "cm", dpi = 500)
 }
 
 create_densityplot <- function(data_merged,group_by, merge_by,alphad=0.3) {
@@ -77,7 +77,7 @@ create_densityplot <- function(data_merged,group_by, merge_by,alphad=0.3) {
          size = "Votos totales",
          color = "ESTADO") +
     theme_light(base_size = 9) +
-    facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 6) +
+    facet_wrap(~ ESTADO_2013, scales = "fixed", ncol = 8) +
     theme(legend.position = "none",
           axis.text.x = element_text(angle = 90, vjust = 0.5),
           strip.text = element_text(color = "black", face = "bold"),
@@ -90,7 +90,7 @@ create_densityplot <- function(data_merged,group_by, merge_by,alphad=0.3) {
     scale_fill_viridis_c(option = "inferno")
   
   # Save plot
-  ggsave(output_file, plot, width = 18, height = 15, units = "cm", dpi = 500)
+  ggsave(output_file, plot, width = 18, height = 12, units = "cm", dpi = 500)
 }
 
 process_data <- function(data, group, eval) {
