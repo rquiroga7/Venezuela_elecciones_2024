@@ -1,4 +1,4 @@
-# Análisis de Elecciones Venezolanas
+# Análisis de las Elecciones Venezolanas 2024
 
 Este repositorio contiene el análisis y visualizaciones de los datos de las elecciones venezolanas de 2024. Los datos surgen del análisis de las actas compartidas en
 resultadosconvzla.com. Verificamos previamente que la descarga de las imágenes de las actas allí presentes, arroja resultados muy similares.
