@@ -111,7 +111,7 @@ data3$ESTADO <- gsub("DTTO. ", "", data3$ESTADO)
  # Create the faceted scatterplot for Gonzalez_pct
   ggplot(data3, aes(y = participacion, x = Gonzalez_pct, color = ESTADO, size = registrados)) +
     geom_point(alpha = 0.10) +  # Transparent dots
-    facet_wrap(~ ESTADO, scales = "fixed", ncol = 6) +  # Facet by Estado with fixed scales
+    facet_wrap(~ ESTADO, scales = "fixed", ncol = 8) +  # Facet by Estado with fixed scales
     labs(y = "Participación (votos_totales / registrados)",
          x = "Gonzalez_pct (Gonzalez / votos_totales)",
          title = "Gonzalez_pct vs Participación por Estado") +
@@ -122,7 +122,7 @@ data3$ESTADO <- gsub("DTTO. ", "", data3$ESTADO)
           strip.background = element_rect(fill = "lightgray")) +  # Set facet header background to light gray
     scale_color_viridis_d(end = 0.8) +  # Use colorblind-friendly palette
     scale_size_continuous(range = c(0.1, 1.5))  # Adjust the range of dot sizes
-  ggsave("Gonzalez_vs_Participacion.png", width = 18, height = 18, units = "cm", dpi = 500)
+  ggsave("Gonzalez_vs_Participacion.png", width = 18, height = 12, units = "cm", dpi = 500)
 
   # Create the faceted scatterplot for Maduro_pct
   ggplot(data3, aes(y = participacion, x = Maduro_pct, color = ESTADO, size = registrados)) +
